@@ -1,0 +1,27 @@
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.ensemble import IsolationForest
+from sklearn.preprocessing import StandardScaler
+
+# Load network traffic data
+data = pd.read_csv('network_traffic.csv')
+
+# Preprocess data
+scaler = StandardScaler()
+X = scaler.fit_transform(data)
+
+# Train Isolation Forest
+model = IsolationForest(random_state=42)
+model.fit(X)
+
+# Predict anomalies
+y_pred = model.predict(X)
+anomalies = X[y_pred == -1]
+
+# Plot anomalies
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x=X[:, 0], y=X[:, 1], hue=y_pred, legend=False)
+plt.title('Isolation Forest Anomaly Detection')
+plt.show()
