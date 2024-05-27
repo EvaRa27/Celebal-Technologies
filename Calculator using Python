@@ -1,0 +1,72 @@
+def calculator():
+    operation = input('''
+    Please type in the math operation you would like to complete:
+    + for addition
+    - for subtraction
+    * for multiplication
+    / for division
+    ''')
+
+    number_1 = int(input('Please enter the first number: '))
+
+    number_2 = int(input('Please enter the second number: '))
+
+    if operation == '+':
+        print('{} + {} = '.format(number_1, number_2))
+        print(number_1 + number_2)
+
+    elif operation == '-':
+        print('{} - {} = '.format(number_1, number_2))
+        print(number_1 - number_2)
+
+    elif operation == '*':
+        print('{} * {} = '.format(number_1, number_2))
+        print(number_1 * number_2)
+
+    elif operation == '/':
+        print('{} / {} = '.format(number_1, number_2))
+        print(number_1 / number_2)
+
+    else:
+        print('You have not typed a valid operator, please run the program again.')
+
+calculator()
+
+
+
+
+
+
+
+
+# OUTPUT
+
+Please type in the math operation you would like to complete:
+    + for addition
+    - for subtraction
+    * for multiplication
+    / for division
+    +
+Please enter the first number: 4
+Please enter the second number: 8
+4 + 8 = 
+12
+
+ -
+Please enter the first number: 3
+Please enter the second number: 2
+3 - 2 = 
+1
+
+
+*
+Please enter the first number: 5
+Please enter the second number: 9
+5 * 9 = 
+45
+
+/
+Please enter the first number: 10
+Please enter the second number: 5
+10 / 5 = 
+2.0
