@@ -1,0 +1,51 @@
+import pandas as pd
+
+# create a sample dataframe with missing values
+data = {'A': [1, 2, None, 4], 'B': [5, 6, 7, 8]}
+df = pd.DataFrame(data)
+
+# replace missing values with the mean of the column
+df.fillna(df.mean(), inplace=True)
+
+from sklearn.preprocessing import StandardScaler
+
+# create a sample dataset
+X = [[1, 2], [3, 4], [5, 6]]
+
+# create a StandardScaler object
+scaler = StandardScaler()
+
+# fit and transform the data
+X_scaled = scaler.fit_transform(X)
+
+import pandas as pd
+
+# create a sample dataframe with categorical variables
+data = {'color': ['red', 'blue', 'green', 'red'], 'size': [1, 2, 3, 4]}
+df = pd.DataFrame(data)
+
+# one-hot encode the categorical variables
+df_encoded = pd.get_dummies(df, columns=['color'])
+
+from sklearn.decomposition import PCA
+
+# create a sample dataset
+X = [[1, 2], [3, 4], [5, 6]]
+
+# create a PCA object
+pca = PCA(n_components=2)
+
+# fit and transform the data
+X_pca = pca.fit_transform(X)
+
+from sklearn.feature_selection import SelectKBest
+
+# create a sample dataset
+X = [[1, 2], [3, 4], [5, 6]]
+y = [1, 2, 3]
+
+# create a SelectKBest object
+selector = SelectKBest(k=2)
+
+# fit and transform the data
+X_selected = selector.fit_transform(X, y)
