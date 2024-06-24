@@ -1,0 +1,62 @@
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+
+# Load the Titanic dataset
+url = 'https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv'
+titanic_df = pd.read_csv(url)
+
+# Display the first few rows of the dataset
+print(titanic_df.head())
+
+# Step 1: Data Cleaning
+# Remove unnecessary columns
+titanic_df = titanic_df.drop(columns=['PassengerId', 'Name', 'Ticket', 'Cabin'])
+
+# Handle missing values
+# For 'Age' and 'Fare', we will use the median to fill missing values
+# For 'Embarked', we will use the most frequent value
+imputer = SimpleImputer(strategy='median')
+titanic_df['Age'] = imputer.fit_transform(titanic_df[['Age']])
+titanic_df['Fare'] = imputer.fit_transform(titanic_df[['Fare']])
+titanic_df['Embarked'] = titanic_df['Embarked'].fillna(titanic_df['Embarked'].mode()[0])
+
+# Step 2: Data Transformation
+# Separate features and target variable
+X = titanic_df.drop(columns=['Survived'])
+y = titanic_df['Survived']
+
+# Define the column transformer
+numeric_features = ['Age', 'Fare']
+numeric_transformer = Pipeline(steps=[
+    ('scaler', StandardScaler())
+])
+
+categorical_features = ['Pclass', 'Sex', 'SibSp', 'Parch', 'Embarked']
+categorical_transformer = Pipeline(steps=[
+    ('onehot', OneHotEncoder(handle_unknown='ignore'))
+])
+
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', numeric_transformer, numeric_features),
+        ('cat', categorical_transformer, categorical_features)
+    ])
+
+# Step 3: Feature Engineering
+# No additional features are created in this example
+
+# Step 4: Prepare the dataset for predictive modeling
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Apply the transformations
+X_train = preprocessor.fit_transform(X_train)
+X_test = preprocessor.transform(X_test)
+
+# Display the transformed feature set
+print(X_train[:5])
