@@ -1,0 +1,77 @@
+# Import necessary libraries
+import pandas as pd
+import seaborn as sb
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.svm import SVC
+from sklearn.metrics import roc_auc_score, confusion_matrix, classification_report
+from imbalanced_learn.over_sampling import RandomOverSampler
+
+# Load the dataset
+df = pd.read_csv('loan_data.csv')
+
+# Perform exploratory data analysis
+print("Mean amount of the loan granted to males as well as females:")
+print(df.groupby('Gender').mean()['LoanAmount'])
+
+print("\nMean amount of the loan granted to married and unmarried people:")
+print(df.groupby(['Married', 'Gender']).mean()['LoanAmount'])
+
+# Encode categorical labels
+def encode_labels(data):
+    for col in data.columns:
+        if data[col].dtype == 'object':
+            le = LabelEncoder()
+            data[col] = le.fit_transform(data[col])
+    return data
+
+df = encode_labels(df)
+
+# Visualize the correlation matrix
+sb.heatmap(df.corr() > 0.8, annot=True, cbar=False)
+plt.show()
+
+# Split the data into features and target
+features = df.drop('Loan_Status', axis=1)
+target = df['Loan_Status'].values
+
+# Split the data into training and testing sets
+X_train, X_val, Y_train, Y_val = train_test_split(features, target, test_size=0.2, random_state=10)
+
+# Perform oversampling to handle the class imbalance issue
+ros = RandomOverSampler(sampling_strategy='minority', random_state=0)
+X, Y = ros.fit_resample(X_train, Y_train)
+
+print("Training set shape after oversampling:", X.shape)
+
+# Perform standard scaling
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+X_val = scaler.transform(X_val)
+
+# Train a Support Vector Classifier (SVC) model
+model = SVC(kernel='rbf')
+model.fit(X, Y)
+
+print("Training Accuracy:", roc_auc_score(Y, model.predict(X)))
+print("Validation Accuracy:", roc_auc_score(Y_val, model.predict(X_val)))
+
+# Evaluate the model using a confusion matrix and classification report
+training_roc_auc = roc_auc_score(Y, model.predict(X))
+validation_roc_auc = roc_auc_score(Y_val, model.predict(X_val))
+
+print("Training ROC AUC Score:", training_roc_auc)
+print("Validation ROC AUC Score:", validation_roc_auc)
+
+cm = confusion_matrix(Y_val, model.predict(X_val))
+
+plt.figure(figsize=(6, 6))
+sb.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=False)
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.show()
+
+print("Classification Report:")
+print(classification_report(Y_val, model.predict(X_val)))
