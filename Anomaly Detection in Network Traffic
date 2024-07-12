@@ -1,27 +1,20 @@
 import numpy as np
-import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.ensemble import IsolationForest
-from sklearn.preprocessing import StandardScaler
-
-# Load network traffic data
-data = pd.read_csv('network_traffic.csv')
-
-# Preprocess data
-scaler = StandardScaler()
-X = scaler.fit_transform(data)
-
-# Train Isolation Forest
-model = IsolationForest(random_state=42)
-model.fit(X)
-
-# Predict anomalies
-y_pred = model.predict(X)
-anomalies = X[y_pred == -1]
-
-# Plot anomalies
-plt.figure(figsize=(10, 6))
-sns.scatterplot(x=X[:, 0], y=X[:, 1], hue=y_pred, legend=False)
-plt.title('Isolation Forest Anomaly Detection')
+from sklearn.cluster import DBSCAN
+from sklearn.datasets import make_blobs
+n_samples = 500
+X, y = make_blobs(n_samples=n_samples, centers=3, random_state=42, cluster_std=1.0)
+anomalies = np.array([[2, 2], [7, 7], [8, 7]])
+X = np.vstack([X, anomalies])
+plt.scatter(X[:, 0], X[:, 1], c='g', marker='*', s=25)
+plt.show()
+plt.title("Network Traffic Dataset")
+dbscan = DBSCAN(eps=1, min_samples=41)  
+labels = dbscan.fit_predict(X)
+anomalies = X[labels == -1]
+anomalies = X[labels == -1]
+plt.scatter(X[:, 0], X[:, 1], c='y', marker='*', s=25)
+plt.scatter(anomalies[:, 0], anomalies[:, 1], c='r', marker='x', s=50, label='Anomalies')
+plt.title("Anomaly Detection in Network Traffic")
+plt.legend()
 plt.show()
